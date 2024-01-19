@@ -22,19 +22,18 @@ class PenilaianController extends Controller
     {
         //
         $queryPenilaian = DB::table('table_penilaian_header')
-        ->leftJoin('table_penilaian_detail','table_penilaian_detail.id_nilai','=','table_penilaian_header.id_nilai')
-        ->leftJoin('table_peserta_didik','table_peserta_didik.id_peserta','=','table_penilaian_detail.id_peserta')
-        ->leftJoin('table_ksm_unitkerja','table_ksm_unitkerja.id_ksm','=','table_penilaian_header.id_ksm')
+        ->join('table_penilaian_detail','table_penilaian_detail.id_nilai','=','table_penilaian_header.id_nilai')
+        ->join('table_peserta_didik','table_peserta_didik.id_peserta','=','table_penilaian_detail.id_peserta')
+        ->join('table_ksm_unitkerja','table_ksm_unitkerja.id_ksm','=','table_penilaian_header.id_ksm')
         ->select('table_penilaian_header.tgl_ujian','table_penilaian_header.periode','table_peserta_didik.nrp_peserta_didik',
-        'table_peserta_didik.nama_peserta_didik','table_peserta_didik.universitas','table_penilaian_detail.nilai_bst','table_penilaian_detail.nilai_cbd',
-        'table_penilaian_detail.nilai_css','table_penilaian_detail.nilai_jr','table_penilaian_detail.nilai_mincex','table_penilaian_detail.id_nilai')
+        'table_peserta_didik.nama_peserta_didik','table_peserta_didik.universitas','table_penilaian_header.id_nilai')
         ->get();
 
 
         $nilai_didik = PenilaianModel::orderBy('id_nilai','asc')->get();
-        $nilai_didik_detail = PenilaianDetailKoassModel::orderBy('id_nilai_detail','asc')->get();
+        // $nilai_didik_detail = PenilaianDetailKoassModel::orderBy('id_nilai_detail','asc')->get();
 
-        return view('nilai.index',compact(['nilai_didik','nilai_didik_detail','queryPenilaian']));
+        return view('nilai.index',compact(['queryPenilaian']));
     }
 
     /**
@@ -42,7 +41,7 @@ class PenilaianController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create()                                                                                                                      
     {
         //
         $mahskoass = DokterMudaModel::all();
@@ -106,22 +105,6 @@ class PenilaianController extends Controller
             }
             
             DB::commit();
-
-            // $id = $nilaiHeader->id_nilai;
-            // foreach($request->get('id_item') as $key=>$value)
-            // {
-            //     $detail = new PenilaianDetailKoassModel();
-            //     $detail->id_nilai = $id;
-            //     $detail->id_peserta = $request->get('id_peserta')[$key];
-            //     // $detail->nrp_peserta = $request->get('nrp_peserta')[$key];
-            //     $detail->nilai_bst = $request->get('nilai_bst')[$key];
-            //     $detail->nilai_cbd = $request->get('nilai_cbd')[$key];
-            //     $detail->nilai_css = $request->get('nilai_css')[$key];
-            //     $detail->nilai_jr = $request->get('nilai_jr')[$key];
-            //     $detail->nilai_mincex = $request->get('nilai_mincex')[$key];
-
-            //     $detail->save();
-            // }
             return redirect()->route('nilai_pdk.index')->with('message','Data Berhasil Disimpan');
             
         }
@@ -129,7 +112,6 @@ class PenilaianController extends Controller
             DB::rollBack();
             return 'Message: ' .$e->getMessage();   
         }
-        // var_dump($request->all());
     }
 
     /**

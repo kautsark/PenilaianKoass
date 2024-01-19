@@ -86,13 +86,13 @@
               
               <div class="card-body">
                     <div class="table-responsive">
-                        <table id="basic-datatable" class="display table table-striped">
+                        <table id="tblMhsKoass" class="display table table-striped">
                         <thead>
                             <tr>
                                 <th rowspan="2">No</th>
                                 <th rowspan="2">NRP Peserta Didik</th>
                                 <th rowspan="2">Nama Peserta Didik</th>
-                                <th colspan="5">Nilai</th>
+                                <th colspan="5" style="text-align: center">Nilai</th>
                                 <th rowspan="2">Action</th>
                             </tr>
                             <tr>
@@ -103,7 +103,8 @@
                                 <td> MINI CEX </td>
                             </tr>
                         </thead>
-                        <tbody class="koassMhswa"></tbody>
+                        {{-- <tbody class="koassMhswa"></tbody> --}}
+                        <tbody></tbody>
                         </table> 
                         {{-- <button type="button" class="btn btn-sm btn-success" onclick="addItem();"> Pilih Mahasiswa </button> --}}
                         <button onclick="tampilForm()" class="btn btn-info btn-flat" type="button"> Pilih Mahasiswa </button>
@@ -159,12 +160,9 @@
                         data-id="{{ $item->id_peserta }}" 
                         data-nrp ="{{ $item->nrp_peserta_didik }}" 
                         data-name="{{ $item->nama_peserta_didik }}" 
-                        class="btn btn-primary btn-xs btn-flat" > Pilih </button>
-                          {{-- <a href="#" class="btn btn-primary btn-sm btn-flat" 
-                          onclick="pilihMhs('{{$item->id_peserta}}','{{$item->nrp_peserta_didik}}','{{$item->nama_peserta_didik}}')">
-                          <i class="fa fa-check-circle"></i>
-                          Pilih  
-                        </a> --}}
+                        class="btn btn-primary btn-xs btn-flat" 
+                        onclick="tambahItem('{{$item->id_peserta}}','{{$item->nrp_peserta_didik}}','{{$item->nama_peserta_didik}}')"> 
+                        Pilih </button>
                     </td>
                   </tr>
               @endforeach
@@ -238,55 +236,114 @@
 
 
 <script>
-  var listItem = [];
-
-  function pilihMhs(id,nrp,nama)
-  {
-    $('#id_peserta').val(id);
-    $('#nrp_mhs').val(nrp);
-    $('#nama_mhs').val(nama);
-    hideKoass();
-    tambahKoassItem();
-  }
-    $(document).on('click','#pilih', function(){
-      var item = {
-        id_peserta : $(this).data('id'),
-        nrp : $(this).data('nrp'),
-        name : $(this).data('name'),
-      }
-      listItem.push(item);
-
-      hideKoass();
-      tambahKoassItem();
-    }); 
-
-    function tambahKoassItem(){
-      var html =''; 
-      listItem.map((el,index) =>  {
-        html += `
-          <tr>
-              <td>${index + 1} </td>  
-              <td>${el.nrp}</td>  
-              <td>${el.name}</td>  
-               <input type = 'hidden' name = 'id_peserta[]' value = '${el.id_peserta}'> 
-              <td><input type='text' name='nilai_bst[]' style='min-width:50px' class='form-control' required></td>
-              <td><input type='text' name='nilai_cbd[]' style='min-width:50px' class='form-control' required></td>
-              <td><input type='text' name='nilai_css[]' style='min-width:50px' class='form-control' required></td>
-              <td><input type='text' name='nilai_jr[]' style='min-width:50px' class='form-control' required></td>
-              <td><input type='text' name='nilai_mincex[]' style='min-width:50px class='form-control' required></td>
-              
-              <td><button type='button' onclick='deleteRow(${index})' class='btn btn-sm btn-danger'>Delete</button></td>
-          </tr>
-        `
-      })
-      $('.koassMhswa').html(html);
+ function tambahItem(idpsr,nrpmhs,namamhs){
+  var idpsrtList = document.getElementsByName('id_peserta[]');
+  for(var i=0;i<idpsrtList.length;i++){
+    if(idpsr==idpsrtList[i].value){
+      return false;
     }
-
-    function deleteRow(index) {
-      var item = listItem[index]
-      listItem.splice(index,1)
-      tambahKoassItem()
   }
+  addItem(idpsr,nrpmhs,namamhs);
+  hideKoass();
+ }
+
+ function addItem(idpsr,nrpmhs,namamhs)
+ {
+  var tblList = document.getElementById("tblMhsKoass");
+  var tblBody = tblList.tBodies[0];
+  var lastRow = tblBody.rows.length;
+  var row     = tblBody.insertRow(lastRow);
+
+  var newCell0 = row.insertCell(0);
+  newCell0.align = "center";
+  newCell0.innerHTML = lastRow+1;
+  
+  var newCell1 = row.insertCell(1);
+  newCell1.align = "left";
+  newCell1.innerHTML = nrpmhs+"<input type='hidden' name='id_peserta[]' id='id_peserta[]' value='"+idpsr+"' />"
+  
+  var newCell2 = row.insertCell(2);
+  newCell2.align = "left";
+  newCell2.innerHTML = namamhs+"<input type='hidden' name='namamhs[]' id='namamhs["+lastRow+"]' value='"+namamhs+"' />"
+  var newCell3 = row.insertCell(3);
+  newCell3.align = "left";
+  newCell3.innerHTML = "<input type='text' name='nilai_bst[]' id='nilaibst["+lastRow+"]' class='form-control' style='width:75px'/>"
+  var newCell4 = row.insertCell(4);
+  newCell4.align = "left";
+  newCell4.innerHTML = "<input type='text' name='nilai_cbd[]' id='nilaicbd["+lastRow+"]' class='form-control'style='width:75px'/>"
+  var newCell5 = row.insertCell(5);
+  newCell5.align = "left";
+  newCell5.innerHTML = "<input type='text' name='nilai_css[]' id='nilaicss["+lastRow+"]' class='form-control' style='width:75px'/>"
+  var newCell6 = row.insertCell(6);
+  newCell6.align = "left";
+  newCell6.innerHTML = "<input type='text' name='nilai_jr[]' id='nilaijr"+lastRow+"]' class='form-control' style='width:75px'/>"
+  var newCell7 = row.insertCell(7);
+  newCell7.align = "left";
+  newCell7.innerHTML = "<input type='text' name='nilai_mincex[]' id='nilaimincex["+lastRow+"]' class='form-control' style='width:75px'/>"
+  
+  var newCell8 = row.insertCell(8);
+  newCell8.align ="center";
+    // newCell8.innerHTML = "<img src='images/mark1.gif'  style='cursor:pointer;border:none;' onclick='removeItem(" + lastRow + ",this);' title='Remove item' />";
+  newCell8.innerHTML = "<button type='button' onclick='removeItem(" + lastRow + ",this);' class='btn btn-link btn-danger' title='Hapus Baris'><i class='fa fa-times'></i></button>";
+
+ }
+
+  // var listItem = [];
+
+  // function pilihMhs(id,nrp,nama)
+  // {
+  //   $('#id_peserta').val(id);
+  //   $('#nrp_mhs').val(nrp);
+  //   $('#nama_mhs').val(nama);
+  //   hideKoass();
+  //   tambahKoassItem();
+  // }
+  //   $(document).on('click','#pilih', function(){
+  //     var item = {
+  //       id_peserta : $(this).data('id'),
+  //       nrp : $(this).data('nrp'),
+  //       name : $(this).data('name'),
+  //     }
+  //     listItem.push(item);
+
+  //     hideKoass();
+  //     tambahKoassItem();
+  //   }); 
+
+  //   function tambahKoassItem(){
+  //     var html =''; 
+  //     listItem.map((el,index) =>  {
+  //       html += `
+  //         <tr>
+  //             <td>${index + 1} </td>  
+  //             <td>${el.nrp}</td>  
+  //             <td>${el.name}</td>  
+  //             <input type = 'hidden' name = 'id_peserta[]' value = '${el.id_peserta}'> 
+  //             <td><input type='text' name='nilai_bst[]' style='width:75px' class='form-control' required></td>
+  //             <td><input type='text' name='nilai_cbd[]' style='width:75px' class='form-control' required></td>
+  //             <td><input type='text' name='nilai_css[]' style='width:75px' class='form-control' required></td>
+  //             <td><input type='text' name='nilai_jr[]' style='width:75px' class='form-control' required></td>
+  //             <td><input type='text' name='nilai_mincex[]' style='width:75px' class='form-control' required></td>
+              
+  //             <td><button type='button' onclick='deleteRow(${index})' class='btn btn-sm btn-danger'>Delete</button></td>
+  //         </tr>
+  //       `
+  //     })
+  //     $('.koassMhswa').html(html);
+  //   }
+
+  //   function deleteRow(index) {
+  //     var item = listItem[index]
+  //     listItem.splice(index,1)
+  //     tambahKoassItem()
+  // }
+  function removeItem(id,objek) {
+    var tblList = document.getElementById("tblMhsKoass");
+    var tblBody = tblList.tBodies[0];
+    tblBody.deleteRow(id);
+    updateIndex();
+}
+
 </script>
 
 @endpush
